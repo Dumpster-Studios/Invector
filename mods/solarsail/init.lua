@@ -130,11 +130,77 @@ function solarsail.util.functions.pos_to_dist(pos_1, pos_2)
 	return math.sqrt(res.x*res.x + res.y*res.y + res.z*res.z)
 end
 
+function solarsail.util.sensible_facedir(itemstack, placer, pointed_thing)
+	local rpos
+	
+	if minetest.registered_nodes[minetest.get_node(pointed_thing.under).name].buildable_to == true then
+		rpos = pointed_thing.under
+	else
+		rpos = pointed_thing.above
+	end
+	
+	local hor_rot = math.deg(placer:get_look_horizontal()) -- convert radians to degrees
+	local deg_to_fdir = math.floor(((hor_rot * 4 / 360) + 0.5) % 4) -- returns 0, 1, 2 or 3; checks between 90 degrees in a pacman style angle check, it's quite magical.
+	
+	local fdir = 0 -- get initialised, and if we don't ever assign an fdir, then it's safe to ignore?! (probably not a good idea to do so)
+	local px = math.abs(placer:get_pos().x - rpos.x) -- measure the distance from the player to the placed nodes position
+	local pz = math.abs(placer:get_pos().z - rpos.z)
+	
+	if px < 2 and pz < 2 then -- if the node is being placed 1 block away from us, then lets place it either upright or upside down
+		local pY = 0
+		if placer:get_pos().y < 0 then
+			pY = math.abs(placer:get_pos().y - 1.14) -- we invert this Y value since we need to go UPWARDS to compare properly.
+		else
+			pY = math.abs(placer:get_pos().y + 2.14) -- we measure the y distance by itself as it may not be needed for wall placed blocks.
+		end
+		
+		if pY - math.abs(rpos.y) > 1.5 then -- are we being placed on the floor? let's be upright then.	
+			if deg_to_fdir == 0 then fdir = 0 -- north
+			elseif deg_to_fdir == 1 then fdir = 3 --east
+			elseif deg_to_fdir == 2 then fdir = 2 -- south
+			elseif deg_to_fdir == 3 then fdir = 1 end -- west
+			return minetest.item_place_node(itemstack, placer, pointed_thing, fdir)
+		else -- if not, let's be upside down.
+			if deg_to_fdir == 0 then fdir = 20 -- north
+			elseif deg_to_fdir == 1 then fdir = 21 -- east
+			elseif deg_to_fdir == 2 then fdir = 22 -- south
+			elseif deg_to_fdir == 3 then fdir = 23 end -- west
+			return minetest.item_place_node(itemstack, placer, pointed_thing, fdir)
+		end 	
+	end
+	-- since we couldn't find a place that isn't either on a ceiling or floor, let's place it onto it's side.
+	if deg_to_fdir == 0 then fdir = 9 -- north
+	elseif deg_to_fdir == 1 then fdir = 12 -- east
+	elseif deg_to_fdir == 2 then fdir = 7 -- south
+	elseif deg_to_fdir == 3 then fdir = 18 end -- west
+	return minetest.item_place_node(itemstack, placer, pointed_thing, fdir)
+end
+
+function solarsail.util.sensible_facedir_simple(itemstack, placer, pointed_thing)
+	local hor_rot = math.deg(placer:get_look_horizontal())
+	local deg_to_fdir = math.floor(((hor_rot * 4 / 360) + 0.5) % 4) 
+	local fdir = 0
+
+	if deg_to_fdir == 0 then fdir = 0
+	elseif deg_to_fdir == 1 then fdir = 3
+	elseif deg_to_fdir == 2 then fdir = 2
+	elseif deg_to_fdir == 3 then fdir = 1 end
+	
+	return minetest.item_place_node(itemstack, placer, pointed_thing, fdir)
+end
+
+
+-- from and to are two positions where it returns whether
+-- it is left or to the right of the from variable.
+function solarsail.util.functions.left_or_right(from, to)
+
+end
+
 solarsail.avg_dtime = 0
 solarsail.last_dtime = {}
 
 local dtime_steps = 0
-local num_steps = 30*2
+local num_steps = 60
 
 minetest.register_globalstep(function(dtime)
 	if dtime_steps == num_steps then
@@ -159,7 +225,7 @@ if true then
 	minetest.register_node("solarsail:wireframe", {
 		description = "Wireframe, prototyping node",
 		tiles = {"solarsail_wireframe.png"},
-		groups = {debug=1}
+		groups = {debug=1, track = 1}
 	})
 	
 	minetest.register_alias("mapgen_stone", "solarsail:wireframe")

@@ -90,7 +90,7 @@ function solarsail.player.set_model(player_ref, model_name, anim, framerate,
 	})
 
 	-- Set the eye offset for the "player camera"
-	player_ref:set_eye_offset(eye_offset, eye_offset_3r)
+	player_ref:set_eye_offset(eye_offset, eye_offset_3rv)
 	-- Attach the "Minetest player" to the "solarsail player"
 	player_ref:set_attach(entity_lua.object, attach_bone, relative_pos, relative_rotation)
 end
