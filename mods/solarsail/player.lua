@@ -69,10 +69,11 @@ function solarsail.player.set_model(player_ref, model_name, anim, framerate,
 
 	-- Construct a player entity at the player's position:
 	local pos = player_ref:get_pos()
-	solarsail.player.model.entity_ref[player_ref:get_player_name()] = minetest.add_entity(pos, model_name)
+	local pname = player_ref:get_player_name()
+	solarsail.player.model.entity_ref[pname] = minetest.add_entity(pos, model_name)
 
 	-- Get LuaObject:
-	local entity_lua = solarsail.player.model.entity_ref[player_ref:get_player_name()]:get_luaentity()
+	local entity_lua = solarsail.player.model.entity_ref[pname]:get_luaentity()
 
 	-- Add the player_ref to the model, as it may be needed to ensure they player is still attached.
 	-- Set this to nil to detach the "player camera" from the "player model"
@@ -93,6 +94,7 @@ function solarsail.player.set_model(player_ref, model_name, anim, framerate,
 	player_ref:set_eye_offset(eye_offset, eye_offset_3rv)
 	-- Attach the "Minetest player" to the "solarsail player"
 	player_ref:set_attach(entity_lua.object, attach_bone, relative_pos, relative_rotation)
+	return 
 end
 
 -- Wrapper for Lua_SAO:set_properties()
