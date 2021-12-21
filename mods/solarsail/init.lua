@@ -189,13 +189,6 @@ function solarsail.util.sensible_facedir_simple(itemstack, placer, pointed_thing
 	return minetest.item_place_node(itemstack, placer, pointed_thing, fdir)
 end
 
-
--- from and to are two positions where it returns whether
--- it is left or to the right of the from variable.
-function solarsail.util.functions.left_or_right(from, to)
-
-end
-
 solarsail.avg_dtime = 0
 solarsail.last_dtime = {}
 
@@ -224,8 +217,9 @@ if true then
 	
 	minetest.register_node("solarsail:wireframe", {
 		description = "Wireframe, prototyping node",
-		tiles = {"solarsail_wireframe.png"},
-		groups = {debug=1, track = 1}
+		tiles = {{name = "solarsail_wireframe_world_aligned.png", scale = 16, align_style = "world"}},
+		groups = {debug=1, track = 1},
+		stack_max = 60000,
 	})
 	
 	minetest.register_alias("mapgen_stone", "solarsail:wireframe")
@@ -233,40 +227,13 @@ if true then
 	minetest.register_alias("mapgen_water_source", "solarsail:wireframe")
 	minetest.register_alias("mapgen_river_water_source", "solarsail:wireframe")
 	
-	-- Sava data handling (per-player):
-	
-	--dofile(minetest.get_modpath("solarsail").."/save.lua")
-	
-	-- HSVA->RGBA->HSVA handling:
-	
-	--dofile(minetest.get_modpath("solarsail").."/colour.lua")
-	
-	-- HUD rendering and formspec handling:
-	
-	--dofile(minetest.get_modpath("solarsail").."/hud.lua")
-	
-	-- Cameras used in dialog, cutscenes or when controlled by the player:
-	
-	--dofile(minetest.get_modpath("solarsail").."/camera.lua")
-	
 	-- Start skybox engine:
-	
 	dofile(minetest.get_modpath("solarsail").."/skybox.lua")
 	
 	-- Control handling for HUDs, player entity, etc:
-	
 	dofile(minetest.get_modpath("solarsail").."/control.lua")
 	
 	-- Third person player camera handling + third person model:
-	
 	dofile(minetest.get_modpath("solarsail").."/player.lua")
-	
-	-- Basic, advanced NPC AI;
-	
-	--dofile(minetest.get_modpath("solarsail").."/npc.lua")
-	
-	-- Player menus:
-	
-	--dofile(minetest.get_modpath("solarsail").."/menu.lua")
 end
 

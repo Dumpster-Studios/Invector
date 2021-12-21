@@ -58,6 +58,8 @@ attach_rotation:
 	z = 3, Rotation on the Z axis in degrees
 			(of either the entity or player, documentation unclear)
 	Setting attach_rotation = nil will default to x, y, z = 0.
+
+returns the entity that the player attaches to similar to add_entity
 ]]
 
 function solarsail.player.set_model(player_ref, model_name, anim, framerate,
@@ -77,7 +79,7 @@ function solarsail.player.set_model(player_ref, model_name, anim, framerate,
 
 	-- Add the player_ref to the model, as it may be needed to ensure they player is still attached.
 	-- Set this to nil to detach the "player camera" from the "player model"
-	entity_lua.attached_player = player_ref
+	entity_lua._attached_player = player_ref
 
 	-- Set the idle animation:
 	solarsail.player.model.entity_ref[player_ref:get_player_name()]:set_animation(anim, framerate, 0)
@@ -94,7 +96,7 @@ function solarsail.player.set_model(player_ref, model_name, anim, framerate,
 	player_ref:set_eye_offset(eye_offset, eye_offset_3rv)
 	-- Attach the "Minetest player" to the "solarsail player"
 	player_ref:set_attach(entity_lua.object, attach_bone, relative_pos, relative_rotation)
-	return 
+	return solarsail.player.model.entity_ref[pname]
 end
 
 -- Wrapper for Lua_SAO:set_properties()
@@ -111,15 +113,20 @@ end
 local pi = math.pi
 
 -- Supply a boolean value to go backwards, otherwise, forwards
-function solarsail.util.functions.yaw_to_vec(rads, mult, backwards)
-	local z = math.cos(rads) * mult
+function solarsail.util.functions.yaw_to_vec(rads, mult)
 	local x = (math.sin(rads) * -1) * mult
-	
-	if backwards then
-		return -x, -z
-	else
-		return x, z
-	end
+	local z = math.cos(rads) * mult
+	return x, z
+end
+
+-- Takes a pitch and yaw to result in a 3d vector.
+-- Add it to whatever vector as needed.
+function solarsail.util.functions.rads_to_vec(yaw, pitch, mult)
+	local x = (math.sin(yaw) * -1) * mult
+	local y = (math.sin(pitch) * -1) * mult
+	local z = math.cos(yaw) * mult
+
+	return x, y, z
 end
 
 -- Get left or right direction, supply a boolean to go left.

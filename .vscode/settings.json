@@ -3,6 +3,9 @@
         "minetest",
         "invector",
         "vector",
-        "Raycast"
+        "Raycast",
+        "superi",
+        "dump",
+        "VoxelArea"
     ]
 }

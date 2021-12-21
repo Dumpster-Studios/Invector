@@ -20,15 +20,12 @@ solarsail.controls.focus = {}
 ]]--
 solarsail.controls.player = {}
 
-local function update_controls()
+minetest.register_globalstep(function()
 	for _, player in ipairs(minetest.get_connected_players()) do
 		solarsail.controls.player[player:get_player_name()] = player:get_player_control()
 	end
-	minetest.after(0.03, update_controls)
-end
+end)
 
 minetest.register_on_joinplayer(function(player)
 	solarsail.controls.focus[player:get_player_name()] = "world"
 end)
-
-minetest.after(0.03, update_controls)

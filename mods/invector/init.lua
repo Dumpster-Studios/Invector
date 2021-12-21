@@ -5,6 +5,7 @@
 if not minetest.settings:get_bool("creative_mode") then
 	minetest.override_item("", {
 		wield_scale = {x=1,y=1,z=1},
+		wield_image = "transparent.png",
 		range = 1,
 		tool_capabilities = {
 			full_punch_interval = 1,
@@ -21,27 +22,34 @@ else
 			full_punch_interval = 1,
 			max_drop_level = 0,
 			groupcaps = {
-				debug = {times={[1]=1,[2]=0.5,[3]=0.25}, uses=0},
-				invector = {times={[1]=1,[2]=0.5,[3]=0.25}, uses=0},
+				debug = {times={[1]=0.125,[2]=0.125/2,[3]=0.125/4}, uses=0},
+				invector = {times={[1]=0.125,[2]=0.125/2,[3]=0.125/4}, uses=0},
 			},
 			damage_groups = {},
 		}
 	})
+
+	-- Unlimited node placement
+	minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack)
+		if placer and placer:is_player() then
+			return minetest.is_creative_enabled(placer:get_player_name())
+		end
+	end)
+
+	function minetest.handle_node_drops(pos, drops, digger)
+		local inv = digger:get_inventory()
+		if inv then
+			for _, item in ipairs(drops) do
+				if not inv:contains_item("main", item, true) then
+					inv:add_item("main", item)
+				end
+			end
+		end
+	end
 end
 
 invector = {}
 invector.functions = {}
--- Racers are numerically indexed as .racers[1-12]
--- with fields being generally as'
--- .racers[1] = {
---   player = player_ref,
---   pname = player:get_player_name(),
---   kart = kart_ref, should be set at race start.
---   is_ai = false, or true, depending on if they 
---                  have an AI mind and can be replaced by a player
---   ai_difficulty = 0-10, requires is_ai set.
---}
-invector.racers = {}
 
 invector.path = minetest.get_modpath("invector")
 
@@ -49,6 +57,11 @@ local function exec(file)
 	dofile(invector.path.."/"..file..".lua")
 end
 
+exec("ai")
 exec("blocks")
+exec("eternity_blocks")
+exec("item")
+exec("game")
 exec("kart")
-exec("karts/sam2")
+exec("karts/kart")
+exec("tracks/test_track")
