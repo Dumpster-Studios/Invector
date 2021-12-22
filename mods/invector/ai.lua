@@ -222,12 +222,15 @@ function invector.ai.think(self)
 			controls.up = false
 			controls.down = true
 			controls.jump = false
-			if cross.y > 0 then
-				controls.left = false
-				controls.right = true
-			elseif cross.y < 0 then
-				controls.right = false
-				controls.left = true
+			if cross == nil then
+			else
+				if cross.y > 0 then
+					controls.left = false
+					controls.right = true
+				elseif cross.y < 0 then
+					controls.right = false
+					controls.left = true
+				end
 			end
 		end
 
