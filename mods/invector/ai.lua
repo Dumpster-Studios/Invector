@@ -55,8 +55,8 @@ function invector.ai.think(self)
 	-- by lack of the node group.
 	local cross = 0
 	local function preferential_waypoints(pos, target_pos)
-		local area_min = vector.new(node_pos.x-32, node_pos.y-32, node_pos.z-32)
-		local area_max = vector.new(node_pos.x+32, node_pos.y+32, node_pos.z+32)
+		local area_min = vector.new(node_pos.x-32, node_pos.y-2, node_pos.z-32)
+		local area_max = vector.new(node_pos.x+32, node_pos.y+2, node_pos.z+32)
 		local node_target
 		-- Scan for the start/finish line first if it's up next
 		if invector.tracks[invector.current_track] == nil then
@@ -96,18 +96,18 @@ function invector.ai.think(self)
 				best_pos = k
 			end
 		end
-		
+
 		--local test_pos = node_targets[best_pos] --node_targets[math.random(1, #node_targets)]
 		local test_pos = node_targets[best_pos]
 		local x, z = solarsail.util.functions.yaw_to_vec(kart_yaw, 1)
 		local kart_forwards = vector.new(x, 0, z)
 
-		local cross 
+		local cross
 		if test_pos == nil then
 		else
 			local delta = vector.normalize(vector.subtract(test_pos, kart_pos))
 			cross = vector.cross(delta, kart_forwards)
-			
+
 			--[[
 				minetest.add_particle({
 					pos = test_pos,
@@ -187,7 +187,7 @@ function invector.ai.think(self)
 		local look_vec = vector.new(lookx, 0, lookz)
 		local kart_pos_new = table.copy(kart_pos)
 		kart_pos_new.y = kart_pos_new.y + 0.25
-		local center_look = 
+		local center_look =
 			Raycast(kart_pos_new, vector.add(kart_pos_new, vector.multiply(look_vec, 1.25)), false, false)
 
 		local node_pos, node, node_def
